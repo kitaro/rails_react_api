@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { deletePost as deletePostService, fetchPost } from "../../services/postService"
+import { deletePost, fetchPost } from "../../services/postService"
 
 function PostDetails() {
     const [post, setPost] = useState(null);
@@ -19,9 +19,9 @@ function PostDetails() {
         fetchCurrentPost();
     }, [id]);
 
-    const deletePost = async () => {
+    const deletePostHandler = async () => {
         try {
-            await deletePostService(id);
+            await deletePost(post.id);
             navigate("/");
         } catch (e) {
             console.error("Haber silinirken hata oldu:", e)
@@ -38,7 +38,7 @@ function PostDetails() {
             {" | "}
             <Link to="/">Geri Dön</Link>
             {" | "}
-            <button onClick={deletePost}> Sil </button>
+            <button onClick={deletePostHandler}> Sil </button>
         </div>
     )
 }
