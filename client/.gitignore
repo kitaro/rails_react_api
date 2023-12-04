@@ -26,3 +26,6 @@ dist-ssr
 # env dosyalarını push etmeyin
 .env
 .env.development
+
+# Don't push up the coverage directory
+coverage
