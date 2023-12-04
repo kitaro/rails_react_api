@@ -55,6 +55,8 @@ function PostsList() {
                                 </Link>
                             </h2>
                             <div className="post-links">
+                                <Link to={`/posts/${post.id}/edit`}>Düzenle</Link>
+                                {" | "}
                                 <button onClick={() => deletePost(post.id)}> Sil </button>
                             </div>
                         </div>
