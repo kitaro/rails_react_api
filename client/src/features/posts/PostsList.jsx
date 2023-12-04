@@ -19,7 +19,7 @@ function PostsList() {
                 }
             } catch (e) {
                 setError("Bir hata oluştu. Garip...");
-                console.log("Bir hata oluştu:", e);
+                console.error("Bir hata oluştu:", e);
             } finally {
                 setLoading(false)
             }
@@ -27,6 +27,21 @@ function PostsList() {
         loadPosts();
         },[]);
 
+    const deletePost = async (id) => {
+        try {
+            const response = await fetch(`${API_URL}/${id}`, {
+                method: "DELETE",
+            });
+
+            if (response.ok) {
+                setPosts(posts.filter((post) => post.id !== id ));
+            } else {
+                throw response;
+            }
+        } catch (e) {
+            console.log("Hata:", e);
+        }
+    }
 
     return (
         <>
@@ -39,7 +54,9 @@ function PostsList() {
                                 {post.title}
                                 </Link>
                             </h2>
-                            <p>{post.body}</p>
+                            <div className="post-links">
+                                <button onClick={() => deletePost(post.id)}> Sil </button>
+                            </div>
                         </div>
                     ))
                 }

@@ -47,7 +47,7 @@ function PostEditForm() {
                 throw response;
             }
         } catch (e) {
-            console.log("Hata oldu:", e)
+            console.error("Hata oldu:", e)
         }
     };
 
