@@ -46,6 +46,8 @@ function PostDetails() {
         <div>
             <h2>{post.title}</h2>
             <p>{post.body}</p>
+            <Link to={`/posts/${id}/edit`}>Düzenle</Link>
+            {" | "}
             <Link to="/">Geri Dön</Link>
             {" | "}
             <button onClick={deletePost}> Sil </button>
