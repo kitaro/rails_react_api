@@ -18,7 +18,7 @@ function NewPostForm() {
         } catch (e) {
             console.error("Yeni haber kaydedilmedi: ", e);
         }
-    }
+    };
 
     return (
         <div>
@@ -26,18 +26,29 @@ function NewPostForm() {
             <form onSubmit={handleSubmit}>
                 <div>
                     <label htmlFor="titleInput">Başlık:</label>
-                    <input id="titleInput" type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
+                    <input
+                        id="titleInput"
+                        type="text"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        required
+                    />
                 </div>
                 <div>
                     <label htmlFor="bodyInput">Metin:</label>
-                    <textarea id="bodyInput" type="text" value={body} onChange={(e) => setBody(e.target.value)} required />
+                    <textarea
+                        id="bodyInput"
+                        value={body}
+                        onChange={(e) => setBody(e.target.value)}
+                        required
+                    />
                 </div>
                 <div>
                     <button type="submit">Kaydet</button>
                 </div>
             </form>
         </div>
-    )
-};
+    );
+}
 
 export default NewPostForm;
