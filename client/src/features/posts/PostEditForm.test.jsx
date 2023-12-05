@@ -77,7 +77,7 @@ describe("PostEditForm component", () => {
     });
 
     it("shows a console error on update failure", async () => {
-        updatePost.mockRejectedValueOnce(new Error("Güncelleme başarısız"));
+        updatePost.mockRejectedValueOnce(new Error("Güncelleme başarısız: "));
 
         const consoleSpy = jest.spyOn(console, "error");
         consoleSpy.mockImplementation(jest.fn());
@@ -92,8 +92,8 @@ describe("PostEditForm component", () => {
             expect(updatePost).toHaveBeenCalledTimes(1);
         });
         expect(consoleSpy).toHaveBeenCalledWith(
-            "Haber güncellenemedi: ",
-            Error("Güncelleme başarısız")
+            "Güncelleme başarısız: ",
+            Error("Güncelleme başarısız: ")
         );
     });
 
