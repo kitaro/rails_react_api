@@ -1,54 +1,98 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+//standard
+import { render } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
+import { BrowserRouter as Router } from "react-router-dom";
+import { act } from "react-dom/test-utils";
+// custom stuff we made
+import NewPostForm from "./NewPostForm";
 import { createPost } from "../../services/postService";
 
-function NewPostForm() {
-    const [title, setTitle] = useState("");
-    const [body, setBody] = useState("");
-    const navigate = useNavigate();
+jest.mock("../../services/postService", () => ({
+    // Gonna need to return a id, title, body
+    createPost: jest.fn(() => {
+        return {
+            id: 1,
+            title: "Test Post",
+            body: "This is a test post.",
+        };
+    }),
+}));
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        const postData = { title, body };
-
-        try {
-            const response = await createPost(postData);
-            navigate(`/posts/${response.id}`);
-        } catch (e) {
-            console.error("Yeni haber kaydedilmedi: ", e);
-        }
+describe("NewPostForm", () => {
+    const renderForm = () => {
+        render(
+            <Router>
+                <NewPostForm />
+            </Router>
+        );
     };
 
-    return (
-        <div>
-            <h2>Yeni Haber Formu</h2>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="titleInput">Başlık:</label>
-                    <input
-                        id="titleInput"
-                        type="text"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <label htmlFor="bodyInput">Metin:</label>
-                    <textarea
-                        id="bodyInput"
-                        value={body}
-                        onChange={(e) => setBody(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <button type="submit">Kaydet</button>
-                </div>
-            </form>
-        </div>
-    );
-}
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
 
-export default NewPostForm;
+    test("renders NewPostForm and allows typing", () => {
+        renderForm();
+
+        const titleInput = screen.getByLabelText(/Başlık:/i);
+        const bodyInput = screen.getByLabelText(/Metin:/i);
+        const submitButton = screen.getByRole("button", { name: /Kaydet/i });
+
+        const expectedTitle = "Test Post";
+        const expectedBody = "This is a test post.";
+
+        fireEvent.change(titleInput, { target: { value: expectedTitle } });
+        fireEvent.change(bodyInput, {
+            target: { value: expectedBody },
+        });
+
+        expect(titleInput.value).toBe(expectedTitle);
+        expect(bodyInput.value).toBe(expectedBody);
+        expect(submitButton).toBeInTheDocument();
+    });
+
+    test("Submits form and redirects to the post page", async () => {
+        renderForm();
+
+        const titleInput = screen.getByLabelText(/Başlık:/i);
+        const bodyInput = screen.getByLabelText(/Metin:/i);
+        const submitButton = screen.getByRole("button", { name: /Kaydet/i });
+
+        fireEvent.change(titleInput, { target: { value: "Test Post" } });
+        fireEvent.change(bodyInput, {
+            target: { value: "This is a test post." },
+        });
+        await act(async () => {
+            fireEvent.click(submitButton);
+        });
+
+        expect(createPost).toHaveBeenCalledTimes(1);
+    });
+
+    test("Displays error message when post creation fails", async () => {
+        createPost.mockRejectedValue(new Error("Yeni haber kaydedilmedi: "));
+
+        const consoleSpy = jest.spyOn(console, "error");
+        consoleSpy.mockImplementation(jest.fn());
+
+        renderForm();
+
+        const titleInput = screen.getByLabelText(/Başlık:/i);
+        const bodyInput = screen.getByLabelText(/Metin:/i);
+        const submitButton = screen.getByRole("button", { name: /Kaydet/i });
+
+        fireEvent.change(titleInput, { target: { value: "Test Post" } });
+        fireEvent.change(bodyInput, {
+            target: { value: "This is a test post." },
+        });
+
+        await act(async () => {
+            fireEvent.click(submitButton);
+        });
+
+        expect(consoleSpy).toHaveBeenCalledWith(
+            "Yeni haber kaydedilmedi: ",
+            new Error("Yeni haber kaydedilmedi: ")
+        );
+    });
+});
