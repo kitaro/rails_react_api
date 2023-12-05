@@ -13,7 +13,7 @@ function PostDetails() {
                 const json = await fetchPost(id);
                 setPost(json);
             } catch (e) {
-                console.error("Bir hata oluştu:", e);
+                console.error("Bir hata oluştu: ", e);
             }
         };
         fetchCurrentPost();
@@ -24,7 +24,7 @@ function PostDetails() {
             await deletePostService(id);
             navigate("/");
         } catch (e) {
-            console.error("Haber silinirken hata oldu:", e)
+            console.error("Haber silinirken hata oldu: ", e)
         }
     }
 
