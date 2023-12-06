@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { deletePost as deletePostService, fetchPost } from "../../services/postService"
+import "./PostImage.css";
 
 function PostDetails() {
     const [post, setPost] = useState(null);
