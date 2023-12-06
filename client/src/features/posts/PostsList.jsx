@@ -1,27 +1,29 @@
 // API_URL comes from the .env.development file
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { deletePost, fetchAllPosts } from "../../services/postService";
+import { deletePost } from "../../services/postService";
 import "./PostImage.css";
+
+import SearchBar from "./SearchBar";
+import usePostsData from "../../hooks/usePostsData";
+import useURLSearchParam from "../../hooks/useURLSearchParam";
 
 function PostsList() {
     const [posts, setPosts] = useState([]);
-    const [, setLoading] = useState(true);
-    const [, setError] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [debouncedSearchTerm, setDebouncedSearchTerm] = useURLSearchParam("search");
+    const {
+        posts: fetchedPosts,
+        loading,
+        error,
+    } = usePostsData(debouncedSearchTerm); // Note the change here
+
     useEffect(() => {
-        async function loadPosts() {
-            try {
-                const data = await fetchAllPosts();
-                setPosts(data);
-                setLoading(false);
-            } catch (e) {
-                setError(e);
-                setLoading(false);
-                console.error("Haber bulunamadı: ", e);
-            }
+        if (fetchedPosts) {
+            setPosts(fetchedPosts); // Update the posts state once fetchedPosts is available
         }
-        loadPosts();
-    }, []);
+    }, [fetchedPosts]);
+    console.log("Test");
 
     const deletePostHandler = async (id) => {
         try {
@@ -31,9 +33,22 @@ function PostsList() {
             console.error("Haber silinirken hata oldu: ", e);
         }
     };
+    const handleImmediateSearchChange = (searchValue) => {
+        setSearchTerm(searchValue);
+    };
+    const handleDebouncedSearchChange = (searchValue) => {
+        setDebouncedSearchTerm(searchValue);
+    };
 
     return (
         <div>
+            <SearchBar
+                value={searchTerm}
+                onSearchChange={handleDebouncedSearchChange}
+                onImmediateChange={handleImmediateSearchChange}
+            />
+            {loading && <p>Loading...</p>}
+            {error && <p>Error loading posts.</p>}
             {posts.map((post) => (
                 <div key={post.id} className="post-container">
                     <h2>

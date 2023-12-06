@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   # API rotaları /api/v1 içerisinde olmalıdır
   namespace :api do
     namespace :v1 do
+      get 'search/posts'
       resources :posts
     end
   end
