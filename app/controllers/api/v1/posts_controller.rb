@@ -56,8 +56,6 @@ class Api::V1::PostsController < ApplicationController
     @post = Post.find(params[:id])
   end
 
-  # Only allow a list of trusted parameters through.
   def post_params
     params.require(:post).permit(:title, :body, :image)
   end
-end

@@ -6,6 +6,7 @@ function PostForm({ post, headerText, onSubmit, buttonText }) {
     post || {
         title: "",
         body: "",
+        image: "",
     });
 
     return(
@@ -18,6 +19,18 @@ function PostForm({ post, headerText, onSubmit, buttonText }) {
                 <div>
                     <label htmlFor="title">Başlık:</label>
                     <input id="title" type="text" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value })} />
+                </div>
+                <div>
+                    <label htmlFor="image">Resim:</label>
+                    <input id="image" type="file" accepts="image/*"
+                           onChange={(e) => {
+                               setFormData({
+                                   ...formData,
+                                   image: e.target.files[0]
+                               });
+                               console.log(e.target.files[0]);
+                           }}
+                        />
                 </div>
                 <div>
                     <label htmlFor="body">Metin:</label>
