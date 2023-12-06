@@ -7,11 +7,11 @@ describe("PostForm component", () => {
     it("renders default inputs when no post prop is passed", () => {
         // Because headertext is required, we can't render the component without it
         const mockSubmit = jest.fn();
-        const buttonText = "Submit";
+        const buttonText = "Kaydet";
         const { getByLabelText } = render(
             <PostForm
                 buttonText={buttonText}
-                headerText="Yeni Haber"
+                headerText="New Post"
                 onSubmit={mockSubmit}
             />
         );
@@ -25,11 +25,11 @@ describe("PostForm component", () => {
             body: "This is a test post.",
         };
         const mockSubmit = jest.fn();
-        const buttonText = "Submit";
+        const buttonText = "Kaydet";
         const { getByLabelText } = render(
             <PostForm
                 buttonText={buttonText}
-                headerText="Yeni Haber"
+                headerText="New Post"
                 onSubmit={mockSubmit}
                 post={mockPost}
             />
@@ -44,7 +44,7 @@ describe("PostForm component", () => {
     it("updates input value on change", () => {
         const mockSubmit = jest.fn();
         const buttonText = "Kaydet";
-        const headerText = "Yeni Haber";
+        const headerText = "New Post";
         const { getByLabelText } = render(
             <PostForm
                 buttonText={buttonText}
@@ -62,7 +62,7 @@ describe("PostForm component", () => {
     it("calls onSubmit with the form data when submitted", async () => {
         const mockSubmit = jest.fn();
         const buttonText = "Kaydet";
-        const headerText = "Yeni Haber";
+        const headerText = "New Post";
 
         const { getByLabelText, getByRole } = render(
             <PostForm
@@ -83,6 +83,35 @@ describe("PostForm component", () => {
             fireEvent.click(getByRole("button", { name: /Kaydet/i }));
         });
         expect(mockSubmit).toHaveBeenCalledTimes(1);
-        expect(mockSubmit).toHaveBeenCalledWith({ title: newTitle, body: newBody, image: "" });
+        expect(mockSubmit).toHaveBeenCalledWith({
+            title: newTitle,
+            body: newBody,
+            image: "",
+        });
+    });
+
+    it("handles image file upload", () => {
+        const mockSubmit = jest.fn();
+        const buttonText = "Kaydet";
+        const headerText = "Yeni Haber";
+
+        const consoleSpy = jest.spyOn(console, "log");
+        consoleSpy.mockImplementation(() => {});
+
+        const { getByLabelText } = render(
+            <PostForm
+                buttonText={buttonText}
+                headerText={headerText}
+                onSubmit={mockSubmit}
+            />
+        );
+
+        // Mock a file upload
+        const file = new File(["sample"], "sample.png", { type: "image/png" });
+        const imageInput = getByLabelText(/Resim/i);
+
+        fireEvent.change(imageInput, { target: { files: [file] } });
+
+        expect(consoleSpy).toHaveBeenCalledWith(file);
     });
 });

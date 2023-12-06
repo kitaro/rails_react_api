@@ -65,7 +65,7 @@ describe("PostsList component", () => {
 
     test("logs error when deleting a post fails", async () => {
         postsService.fetchAllPosts.mockResolvedValue(mockPosts);
-        const deleteError = new Error("Delete failed!");
+        const deleteError = new Error("Silme başarısız!");
         postsService.deletePost.mockRejectedValue(deleteError);
 
         render(<PostsList />, { wrapper: MemoryRouter });
@@ -79,5 +79,48 @@ describe("PostsList component", () => {
                 deleteError
             );
         });
+    });
+});
+
+describe("PostsList component image_url rendering", () => {
+    const mockPostWithImageUrl = [
+        {
+            id: 1,
+            title: "Post with Image",
+            body: "Hello Image",
+            image_url: "https://via.placeholder.com/150",
+        },
+    ];
+
+    const mockPostWithoutImageUrl = [
+        {
+            id: 2,
+            title: "Post without Image",
+            body: "Hello Placeholder",
+            image_url: null,
+        },
+    ];
+
+    test("renders the image with image_url exists", async () => {
+        postsService.fetchAllPosts.mockResolvedValue(mockPostWithImageUrl);
+
+        render(<PostsList />, { wrapper: MemoryRouter });
+
+        await waitFor(() => screen.getByText(mockPostWithImageUrl[0].title));
+
+        const imgElement = screen.getByAltText(mockPostWithImageUrl[0].title);
+        expect(imgElement).toBeInTheDocument();
+        expect(imgElement.src).toBe(mockPostWithImageUrl[0].image_url);
+    });
+
+    test("renders the placeholder div when image_url does not exist", async () => {
+        postsService.fetchAllPosts.mockResolvedValue(mockPostWithoutImageUrl);
+
+        render(<PostsList />, { wrapper: MemoryRouter });
+
+        await waitFor(() => screen.getByText(mockPostWithoutImageUrl[0].title));
+
+        const placeholderDiv = screen.getByTestId("post-image-stub");
+        expect(placeholderDiv).toBeInTheDocument();
     });
 });
