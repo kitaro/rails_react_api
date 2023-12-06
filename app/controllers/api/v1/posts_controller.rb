@@ -1,19 +1,18 @@
 class Api::V1::PostsController < ApplicationController
-  before_action :set_post, only: %i[ show update destroy ]
+  before_action :set_post, only: %i[show update destroy]
 
   # GET /posts
   def index
+    posts_per_page = 3
     @posts = Post.order(created_at: :desc)
+    posts_with_images = paginate_posts(@posts, posts_per_page)
+    total_posts_count = Post.count
 
-    posts_with_images = @posts.map do |post|
-      if post.image.attached?
-        post.as_json.merge(image_url: url_for(post.image))
-      else
-        post.as_json.merge(image_url: nil)
-      end
-    end
-
-    render json: posts_with_images
+    render json: {
+      posts: posts_with_images,
+      total_count: total_posts_count,
+      per_page: posts_per_page
+    }
   end
 
   # GET /posts/1
@@ -30,6 +29,7 @@ class Api::V1::PostsController < ApplicationController
     @post = Post.new(post_params)
 
     if @post.save
+      # We can't render the @post because we are now in /api/v1/posts
       render json: @post, status: :created, location: api_v1_post_url(@post)
     else
       render json: @post.errors, status: :unprocessable_entity
@@ -51,11 +51,13 @@ class Api::V1::PostsController < ApplicationController
   end
 
   private
+
   # Use callbacks to share common setup or constraints between actions.
   def set_post
     @post = Post.find(params[:id])
   end
 
+  # Only allow a list of trusted parameters through.
   def post_params
     params.require(:post).permit(:title, :body, :image)
   end
