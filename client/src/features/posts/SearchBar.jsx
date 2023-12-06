@@ -7,6 +7,7 @@ function SearchBar({ value, onSearchChange, onImmediateChange }) {
     const handleSearchChange = (e) => {
         const searchValue = e.target.value;
 
+        // Update the searchTerm immediately
         onImmediateChange(searchValue);
 
         // Clear the existing timeout if it exists
@@ -24,7 +25,7 @@ function SearchBar({ value, onSearchChange, onImmediateChange }) {
         <div>
             <input
                 type="text"
-                placeholder="Ara..."
+                placeholder="Search..."
                 value={value}
                 onChange={handleSearchChange}
             />
