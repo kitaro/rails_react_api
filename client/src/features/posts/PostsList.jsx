@@ -8,7 +8,6 @@ function PostsList() {
     const [posts, setPosts] = useState([]);
     const [, setLoading] = useState(true);
     const [, setError] = useState(null);
-    // Fetch posts from the API
     useEffect(() => {
         async function loadPosts() {
             try {
@@ -50,7 +49,7 @@ function PostsList() {
                                 className="post-image"
                             />
                         ) : (
-                            <div className="post-image-stub" />
+                            <div className="post-image-stub" data-testid="post-image-stub" />
                         )}
                     </div>
                     <div className="post-links">

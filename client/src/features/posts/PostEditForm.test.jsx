@@ -3,6 +3,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { fetchPost, updatePost } from "../../services/postService";
 import { act } from "react-dom/test-utils";
 import PostEditForm from "./PostEditForm";
+import { objectToFormData } from "../../utils/formDataHelper";
 
 jest.mock("../../services/postService", () => ({
     fetchPost: jest.fn(),
@@ -52,9 +53,12 @@ describe("PostEditForm component", () => {
         });
 
         const newPost = {
-            title: "Yeni Haber Başlığı",
-            body: "Yeni Haber Metni",
+            title: "New Post Title",
+            body: "New Post Body",
+            image: null,
         };
+
+        const formData = objectToFormData({ post: newPost });
 
         fireEvent.change(screen.getByLabelText(/Başlık/i), {
             target: { value: newPost.title },
@@ -70,14 +74,14 @@ describe("PostEditForm component", () => {
 
         await waitFor(() => {
             expect(updatePost).toHaveBeenCalledTimes(1);
-            expect(updatePost).toHaveBeenCalledWith("1", newPost);
+            expect(updatePost).toHaveBeenCalledWith("1", formData);
         });
 
         expect(screen.getByText("Haber Detayı")).toBeInTheDocument();
     });
 
     it("shows a console error on update failure", async () => {
-        updatePost.mockRejectedValueOnce(new Error("Güncelleme başarısız: "));
+        updatePost.mockRejectedValueOnce(new Error("Güncelleme başarısız"));
 
         const consoleSpy = jest.spyOn(console, "error");
         consoleSpy.mockImplementation(jest.fn());
@@ -93,7 +97,7 @@ describe("PostEditForm component", () => {
         });
         expect(consoleSpy).toHaveBeenCalledWith(
             "Güncelleme başarısız: ",
-            Error("Güncelleme başarısız: ")
+            Error("Güncelleme başarısız")
         );
     });
 
